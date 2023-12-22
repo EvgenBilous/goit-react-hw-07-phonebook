@@ -1,29 +1,52 @@
 import { createSlice } from '@reduxjs/toolkit';
+import { getContacts, newContact, removeContact } from './operations';
 
 export const contactsSlice = createSlice({
   name: 'contacts',
   initialState: {
-    contacts: [
-      //   { id: 'id-1', name: 'Rosie Simpson', number: '459-12-56' },
-      //   { id: 'id-2', name: 'Hermione Kline', number: '443-89-12' },
-      //   { id: 'id-3', name: 'Eden Clements', number: '645-17-79' },
-      //   { id: 'id-4', name: 'Annie Copeland', number: '227-91-26' },
-    ],
+    contacts: {
+      items: [],
+      isLoading: false,
+      error: null,
+    },
     filter: '',
   },
   reducers: {
-    newContact: (state, action) => {
-      state.contacts = [...state.contacts, action.payload];
-    },
-    removeContact: (state, action) => {
-      state.contacts = state.contacts.filter(
-        contact => contact.id !== action.payload
-      );
-    },
     changeFilter: (state, action) => {
       state.filter = action.payload;
     },
   },
+  extraReducers: builder => {
+    builder
+      .addCase(newContact.fulfilled, (state, action) => {
+        state.contacts.items = [...state.contacts.items, action.payload];
+      })
+
+      .addCase(removeContact.fulfilled, (state, action) => {
+        state.contacts.items = state.contacts.items.filter(
+          contact => contact.id !== action.payload
+        );
+      })
+
+      .addCase(getContacts.fulfilled, (state, action) => {
+        state.contacts.items = action.payload;
+      })
+      .addCase(getContacts.rejected, handleRejected)
+      .addMatcher(action => action.type.endsWith('pending'), handlePending)
+      .addMatcher(action => action.type.endsWith('rejected'), handleRejected)
+      .addMatcher(action => action.type.endsWith('fulfilled'), handleFulfilled);
+  },
 });
-export const { newContact, removeContact, changeFilter } =
-  contactsSlice.actions;
+
+const handlePending = state => {
+  state.contacts.isLoading = true;
+};
+const handleRejected = (state, action) => {
+  state.contacts.isLoading = false;
+  state.contacts.error = action.error.message;
+};
+const handleFulfilled = state => {
+  state.contacts.isLoading = false;
+  state.contacts.error = null;
+};
+export const { changeFilter } = contactsSlice.actions;

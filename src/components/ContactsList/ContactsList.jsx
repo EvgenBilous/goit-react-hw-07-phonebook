@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from 'react-redux';
 import { selectContacts, selectFilter } from '../../redux/contacts/selectors';
-import { removeContact } from '../../redux/contacts/slice';
+import { removeContact } from '../../redux/contacts/operations';
 
 const ContactsList = () => {
   const contacts = useSelector(selectContacts);
@@ -15,8 +15,6 @@ const ContactsList = () => {
   };
 
   const deleteContact = id => {
-    // const action = removeContact(id)
-    // dispatch(action)
     dispatch(removeContact(id));
   };
 

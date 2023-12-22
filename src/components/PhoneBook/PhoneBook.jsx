@@ -1,8 +1,7 @@
-import { nanoid } from 'nanoid';
 import { React, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectContacts } from '../../redux/contacts/selectors';
-import { newContact } from '../../redux/contacts/slice';
+import { newContact } from '../../redux/contacts/operations';
 
 const PhoneBook = () => {
   const [state, setState] = useState({ name: '', number: '' });
@@ -26,7 +25,6 @@ const PhoneBook = () => {
       return;
     }
     const contact = {
-      id: nanoid(),
       name,
       number,
     };
